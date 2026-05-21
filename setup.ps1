@@ -1,16 +1,49 @@
-# 1. Install PowerShell 7 and Fastfetch using Winget
-Write-Host "Installing PowerShell 7 and Fastfetch..." -ForegroundColor Cyan
+# 1. Download and Install JetBrainsMono Nerd Font
+Write-Host "Downloading JetBrainsMono Nerd Font..." -ForegroundColor Cyan
+$fontUrl = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip"
+$tempZip = Join-Path $env:TEMP "JetBrainsMono.zip"
+$tempExtract = Join-Path $env:TEMP "JetBrainsMono_Extract"
+
+Invoke-WebRequest -Uri $fontUrl -OutFile $tempZip
+
+Write-Host "Extracting and installing fonts (this may take a moment)..." -ForegroundColor Cyan
+if (Test-Path $tempExtract) { Remove-Item -Path $tempExtract -Recurse -Force }
+Expand-Archive -Path $tempZip -DestinationPath $tempExtract -Force
+
+# Define the user-level fonts directory
+$fontFolder = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
+if (-not (Test-Path $fontFolder)) { New-Item -ItemType Directory -Path $fontFolder -Force | Out-Null }
+
+# Install each .ttf file and register it in the Current User registry
+$fonts = Get-ChildItem -Path $tempExtract -Filter *.ttf -Recurse
+$registryKey = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts"
+
+foreach ($font in $fonts) {
+    $destPath = Join-Path $fontFolder $font.Name
+    Copy-Item -Path $font.FullName -Destination $destPath -Force
+    
+    $fontName = $font.BaseName + " (TrueType)"
+    Set-ItemProperty -Path $registryKey -Name $fontName -Value $destPath -Force
+}
+
+# Cleanup font temp files
+Remove-Item -Path $tempZip -Force
+Remove-Item -Path $tempExtract -Recurse -Force
+Write-Host "Font installation complete!" -ForegroundColor Green
+
+# 2. Install PowerShell 7 and Fastfetch using Winget
+Write-Host "`nInstalling PowerShell 7 and Fastfetch..." -ForegroundColor Cyan
 winget install --id Microsoft.PowerShell --source winget --accept-package-agreements --accept-source-agreements
 winget install --id fastfetch-cli.fastfetch --source winget --accept-package-agreements --accept-source-agreements
 
-# 2. Define directory paths
+# 3. Define directory paths
 $homeDir = $env:USERPROFILE
 $configDir = Join-Path $homeDir ".config"
 $fastfetchDir = Join-Path $configDir "fastfetch"
 $psProfileDir = Join-Path $homeDir "Documents\PowerShell"
 $wtSettingsPath = Join-Path $env:LOCALAPPDATA "Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
 
-# 3. Create the directories and hide .config
+# 4. Create the directories and hide .config
 if (-not (Test-Path $configDir)) {
     Write-Host "Creating hidden .config directory..."
     New-Item -Path $configDir -ItemType Directory -Force | Out-Null
@@ -27,7 +60,7 @@ if (-not (Test-Path $psProfileDir)) {
     New-Item -Path $psProfileDir -ItemType Directory -Force | Out-Null
 }
 
-# 4. Write config.jsonc
+# 5. Write config.jsonc
 Write-Host "Writing fastfetch config.jsonc..."
 $configContent = @'
 {
@@ -102,7 +135,7 @@ $configContent = @'
 $configPath = Join-Path $fastfetchDir "config.jsonc"
 Set-Content -Path $configPath -Value $configContent -Encoding UTF8
 
-# 5. Write ascii.txt
+# 6. Write ascii.txt
 Write-Host "Writing fastfetch ascii.txt..."
 $asciiContent = @'
 $9⠀⠀⠀⠀⠀⠀⠀⢢⣤⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣠⣤⣶⣶⡟⠁⠀⠀⠀⠀⠀
@@ -131,10 +164,9 @@ $9⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 $asciiPath = Join-Path $fastfetchDir "ascii.txt"
 Set-Content -Path $asciiPath -Value $asciiContent -Encoding UTF8
 
-# 6. Write profile.ps1
+# 7. Write profile.ps1
 Write-Host "Writing profile.ps1 to Documents\PowerShell..."
 $profileContent = @'
-### Chris Titus Tech's PowerShell profile
 
 Write-Host "Use 'Show-Help' to list all available functions" -ForegroundColor Yellow
 
@@ -187,6 +219,9 @@ function docs {
     Set-Location -Path ([Environment]::GetFolderPath("MyDocuments"))
 }
 
+function Update-Profile {
+    Invoke-RestMethod https://github.com/Aniruddha69/Terminal/raw/main/setup.ps1 | Invoke-Expression
+}
 # Help Function
 function Show-Help {
     $title    = $PSStyle.Foreground.BrightMagenta
@@ -243,7 +278,7 @@ if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
 $psProfilePath = Join-Path $psProfileDir "profile.ps1"
 Set-Content -Path $psProfilePath -Value $profileContent -Encoding UTF8
 
-# 7. Overwrite Windows Terminal settings.json
+# 8. Overwrite Windows Terminal settings.json
 Write-Host "Overwriting Windows Terminal settings.json..."
 $wtSettingsContent = @'
 {
@@ -439,4 +474,4 @@ if (Test-Path -Path $wtSettingsPath -IsValid) {
     Write-Host "Windows Terminal settings path not found. Please ensure Windows Terminal is installed." -ForegroundColor Red
 }
 
-Write-Host "`nComplete! Close Windows Terminal entirely and reopen it to see your new themes, layouts, and fastfetch profile." -ForegroundColor Green
+Write-Host "`nComplete! Close Windows Terminal entirely and reopen it. Your new font, themes, layouts, and fastfetch profile should all be loaded!" -ForegroundColor Green
