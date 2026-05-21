@@ -4,16 +4,16 @@ winget install --id Microsoft.PowerShell --source winget --accept-package-agreem
 winget install --id fastfetch-cli.fastfetch --source winget --accept-package-agreements --accept-source-agreements
 
 # 2. Define directory paths
-$homeDir = $HOME
+$homeDir = $env:USERPROFILE
 $configDir = Join-Path $homeDir ".config"
 $fastfetchDir = Join-Path $configDir "fastfetch"
 $psProfileDir = Join-Path $homeDir "Documents\PowerShell"
+$wtSettingsPath = Join-Path $env:LOCALAPPDATA "Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
 
 # 3. Create the directories and hide .config
 if (-not (Test-Path $configDir)) {
     Write-Host "Creating hidden .config directory..."
     New-Item -Path $configDir -ItemType Directory -Force | Out-Null
-    # Make the .config folder hidden
     (Get-Item $configDir).Attributes += 'Hidden'
 }
 
@@ -28,7 +28,7 @@ if (-not (Test-Path $psProfileDir)) {
 }
 
 # 4. Write config.jsonc
-Write-Host "Writing config.jsonc..."
+Write-Host "Writing fastfetch config.jsonc..."
 $configContent = @'
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
@@ -103,7 +103,7 @@ $configPath = Join-Path $fastfetchDir "config.jsonc"
 Set-Content -Path $configPath -Value $configContent -Encoding UTF8
 
 # 5. Write ascii.txt
-Write-Host "Writing ascii.txt..."
+Write-Host "Writing fastfetch ascii.txt..."
 $asciiContent = @'
 $9⠀⠀⠀⠀⠀⠀⠀⢢⣤⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣠⣤⣶⣶⡟⠁⠀⠀⠀⠀⠀
 $9⠀⠀⠀⠀⠀⠀⠀⠀⠹⣿⣿⣿⣷⣶⣦⣤⣀⡀⠀⠀⠀⠀⢀⣀⣤⣴⣶⣶⣶⣶⣶⣶⣦⣤⣀⡀⢀⣀⣠⣤⣴⣶⣾⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀
@@ -136,9 +136,7 @@ Write-Host "Writing profile.ps1 to Documents\PowerShell..."
 $profileContent = @'
 ### Chris Titus Tech's PowerShell profile
 
-
 Write-Host "Use 'Show-Help' to list all available functions" -ForegroundColor Yellow
-
 
 #KeyBinds
 Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
@@ -188,8 +186,6 @@ function lazyg {
 function docs {
     Set-Location -Path ([Environment]::GetFolderPath("MyDocuments"))
 }
-
-
 
 # Help Function
 function Show-Help {
@@ -247,4 +243,200 @@ if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
 $psProfilePath = Join-Path $psProfileDir "profile.ps1"
 Set-Content -Path $psProfilePath -Value $profileContent -Encoding UTF8
 
-Write-Host "`nSetup complete! Start a new PowerShell 7 session to see your profile and fastfetch layout." -ForegroundColor Green
+# 7. Overwrite Windows Terminal settings.json
+Write-Host "Overwriting Windows Terminal settings.json..."
+$wtSettingsContent = @'
+{
+    "$help": "https://aka.ms/terminal-documentation",
+    "$schema": "https://aka.ms/terminal-profiles-schema",
+    "actions": 
+    [
+        {
+            "command": 
+            {
+                "action": "copy",
+                "singleLine": false
+            },
+            "id": "User.copy.644BA8F2"
+        },
+        {
+            "command": "paste",
+            "id": "User.paste"
+        },
+        {
+            "command": 
+            {
+                "action": "splitPane",
+                "split": "auto",
+                "splitMode": "duplicate"
+            },
+            "id": "User.splitPane.A6751878"
+        },
+        {
+            "command": "find",
+            "id": "User.find"
+        }
+    ],
+    "alwaysOnTop": false,
+    "copyFormatting": "none",
+    "copyOnSelect": false,
+    "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+    "keybindings": 
+    [
+        {
+            "id": "User.copy.644BA8F2",
+            "keys": "ctrl+c"
+        },
+        {
+            "id": "User.paste",
+            "keys": "ctrl+v"
+        },
+        {
+            "id": "User.find",
+            "keys": "ctrl+shift+f"
+        },
+        {
+            "id": "User.splitPane.A6751878",
+            "keys": "alt+shift+d"
+        }
+    ],
+    "newTabMenu": 
+    [
+        {
+            "type": "remainingProfiles"
+        }
+    ],
+    "profiles": 
+    {
+        "defaults": 
+        {
+            "colorScheme": "Catppuccin Mocha",
+            "cursorShape": "filledBox",
+            "experimental.retroTerminalEffect": false,
+            "font": 
+            {
+                "builtinGlyphs": true,
+                "cellHeight": "1.2",
+                "colorGlyphs": true,
+                "face": "JetBrainsMono Nerd Font Mono",
+                "size": 10,
+                "weight": "extra-black"
+            },
+            "intenseTextStyle": "all",
+            "opacity": 80,
+            "padding": "8",
+            "useAcrylic": true
+        },
+        "list": 
+        [
+            {
+                "commandline": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+                "hidden": false,
+                "name": "Windows PowerShell"
+            },
+            {
+                "commandline": "%SystemRoot%\\System32\\cmd.exe",
+                "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
+                "hidden": false,
+                "name": "Command Prompt"
+            },
+            {
+                "guid": "{b453ae62-4e3d-5e58-b989-0a998ec441b8}",
+                "hidden": false,
+                "name": "Azure Cloud Shell",
+                "source": "Windows.Terminal.Azure"
+            },
+            {
+                "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+                "hidden": false,
+                "name": "PowerShell",
+                "source": "Windows.Terminal.PowershellCore"
+            }
+        ]
+    },
+    "schemes": 
+    [
+        {
+            "background": "#1E1E2E",
+            "black": "#45475A",
+            "blue": "#89B4FA",
+            "brightBlack": "#585B70",
+            "brightBlue": "#89B4FA",
+            "brightCyan": "#94E2D5",
+            "brightGreen": "#A6E3A1",
+            "brightPurple": "#F5C2E7",
+            "brightRed": "#F38BA8",
+            "brightWhite": "#A6ADC8",
+            "brightYellow": "#F9E2AF",
+            "cursorColor": "#F5E0DC",
+            "cyan": "#94E2D5",
+            "foreground": "#CDD6F4",
+            "green": "#A6E3A1",
+            "name": "Catppuccin Mocha",
+            "purple": "#F5C2E7",
+            "red": "#F38BA8",
+            "selectionBackground": "#585B70",
+            "white": "#BAC2DE",
+            "yellow": "#F9E2AF"
+        },
+        {
+            "background": "#000000",
+            "black": "#0C0C0C",
+            "blue": "#0037DA",
+            "brightBlack": "#767676",
+            "brightBlue": "#3B78FF",
+            "brightCyan": "#61D6D6",
+            "brightGreen": "#16C60C",
+            "brightPurple": "#B4009E",
+            "brightRed": "#E74856",
+            "brightWhite": "#F2F2F2",
+            "brightYellow": "#F9F1A5",
+            "cursorColor": "#FFFFFF",
+            "cyan": "#3A96DD",
+            "foreground": "#FFFFFF",
+            "green": "#13A10E",
+            "name": "Color Scheme 15",
+            "purple": "#881798",
+            "red": "#C50F1F",
+            "selectionBackground": "#FFFFFF",
+            "white": "#CCCCCC",
+            "yellow": "#C19C00"
+        },
+        {
+            "background": "#282A36",
+            "black": "#21222C",
+            "blue": "#BD93F9",
+            "brightBlack": "#6272A4",
+            "brightBlue": "#D6ACFF",
+            "brightCyan": "#A4FFFF",
+            "brightGreen": "#69FF94",
+            "brightPurple": "#FF92DF",
+            "brightRed": "#FF6E6E",
+            "brightWhite": "#FFFFFF",
+            "brightYellow": "#FFFFA5",
+            "cursorColor": "#F8F8F2",
+            "cyan": "#8BE9FD",
+            "foreground": "#F8F8F2",
+            "green": "#50FA7B",
+            "name": "Dracula",
+            "purple": "#FF79C6",
+            "red": "#FF5555",
+            "selectionBackground": "#44475A",
+            "white": "#F8F8F2",
+            "yellow": "#F1FA8C"
+        }
+    ],
+    "tabWidthMode": "titleLength",
+    "themes": [],
+    "useAcrylicInTabRow": true
+}
+'@
+
+if (Test-Path -Path $wtSettingsPath -IsValid) {
+    Set-Content -Path $wtSettingsPath -Value $wtSettingsContent -Encoding UTF8 -Force
+} else {
+    Write-Host "Windows Terminal settings path not found. Please ensure Windows Terminal is installed." -ForegroundColor Red
+}
+
+Write-Host "`nComplete! Close Windows Terminal entirely and reopen it to see your new themes, layouts, and fastfetch profile." -ForegroundColor Green
