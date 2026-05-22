@@ -31,10 +31,12 @@ Remove-Item -Path $tempZip -Force
 Remove-Item -Path $tempExtract -Recurse -Force
 Write-Host "Font installation complete!" -ForegroundColor Green
 
-# 2. Install PowerShell 7 and Fastfetch using Winget
-Write-Host "`nInstalling PowerShell 7 and Fastfetch..." -ForegroundColor Cyan
+# 2. Install Git, PowerShell 7, and Fastfetch using Winget
+Write-Host "`nInstalling Git, PowerShell 7, and Fastfetch..." -ForegroundColor Cyan
+winget install --id Git.Git -e --source winget --accept-package-agreements --accept-source-agreements
 winget install --id Microsoft.PowerShell --source winget --accept-package-agreements --accept-source-agreements
 winget install --id fastfetch-cli.fastfetch --source winget --accept-package-agreements --accept-source-agreements
+winget install --id Microsoft.WindowsTerminal -e --source winget --accept-package-agreements --accept-source-agreements
 
 # 3. Define directory paths
 $homeDir = $env:USERPROFILE
@@ -222,6 +224,7 @@ function docs {
 function Update-Profile {
     Invoke-RestMethod https://github.com/Aniruddha69/Terminal/raw/main/setup.ps1 | Invoke-Expression
 }
+
 # Help Function
 function Show-Help {
     $title    = $PSStyle.Foreground.BrightMagenta
@@ -474,4 +477,4 @@ if (Test-Path -Path $wtSettingsPath -IsValid) {
     Write-Host "Windows Terminal settings path not found. Please ensure Windows Terminal is installed." -ForegroundColor Red
 }
 
-Write-Host "`nComplete! Close Windows Terminal entirely and reopen it. Your new font, themes, layouts, and fastfetch profile should all be loaded!" -ForegroundColor Green
+Write-Host "`nComplete! Close Windows Terminal entirely and reopen it. Your new font, git tool, themes, layouts, and fastfetch profile should all be loaded!" -ForegroundColor Green
