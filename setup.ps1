@@ -36,7 +36,7 @@ Write-Host "`nInstalling Git, PowerShell 7, and Fastfetch..." -ForegroundColor C
 winget install --id Git.Git -e --source winget --accept-package-agreements --accept-source-agreements
 winget install --id Microsoft.PowerShell --source winget --accept-package-agreements --accept-source-agreements
 winget install --id fastfetch-cli.fastfetch --source winget --accept-package-agreements --accept-source-agreements
-winget install --id Microsoft.WindowsTerminal -e --source winget --accept-package-agreements --accept-source-agreements
+winget install --id Mircosoft.WindowsTerminal --source winget --accept-package-agreements --accept-source-agreements
 
 # 3. Define directory paths
 $homeDir = $env:USERPROFILE
