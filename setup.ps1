@@ -1,40 +1,7 @@
-# 1. Download and Install JetBrainsMono Nerd Font
-Write-Host "Downloading JetBrainsMono Nerd Font..." -ForegroundColor Cyan
-$fontUrl = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip"
-$tempZip = Join-Path $env:TEMP "JetBrainsMono.zip"
-$tempExtract = Join-Path $env:TEMP "JetBrainsMono_Extract"
-
-Invoke-WebRequest -Uri $fontUrl -OutFile $tempZip
-
-Write-Host "Extracting and installing fonts (this may take a moment)..." -ForegroundColor Cyan
-if (Test-Path $tempExtract) { Remove-Item -Path $tempExtract -Recurse -Force }
-Expand-Archive -Path $tempZip -DestinationPath $tempExtract -Force
-
-# Define the user-level fonts directory
-$fontFolder = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
-if (-not (Test-Path $fontFolder)) { New-Item -ItemType Directory -Path $fontFolder -Force | Out-Null }
-
-# Install each .ttf file and register it in the Current User registry
-$fonts = Get-ChildItem -Path $tempExtract -Filter *.ttf -Recurse
-$registryKey = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts"
-
-foreach ($font in $fonts) {
-    $destPath = Join-Path $fontFolder $font.Name
-    Copy-Item -Path $font.FullName -Destination $destPath -Force
-    
-    $fontName = $font.BaseName + " (TrueType)"
-    Set-ItemProperty -Path $registryKey -Name $fontName -Value $destPath -Force
-}
-
-# Cleanup font temp files
-Remove-Item -Path $tempZip -Force
-Remove-Item -Path $tempExtract -Recurse -Force
-Write-Host "Font installation complete!" -ForegroundColor Green
-
 # 2. Install Git, PowerShell 7, and Fastfetch using Winget
 Write-Host "`nInstalling Git, PowerShell 7, and Fastfetch..." -ForegroundColor Cyan
 winget install --id Git.Git -e --source winget --accept-package-agreements --accept-source-agreements
-winget install --id Microsoft.PowerShell --source winget --accept-package-agreements --accept-source-agreements
+winget install --id Microsoft.PowerShell --source winget --accept-package-agreements --accept-source-agreements 
 winget install --id fastfetch-cli.fastfetch --source winget --accept-package-agreements --accept-source-agreements
 winget install --id Mircosoft.WindowsTerminal --source winget --accept-package-agreements --accept-source-agreements
 
@@ -71,7 +38,7 @@ $configContent = @'
     "type": "file",
     "source": "C:/Users/aniru/.config/fastfetch/ascii.txt",
     "color": {
-      "1": "#FFFFFF",  
+      "1": "#FFFFFF",
       "2": "#F2CDCD",
       "3": "#F5C2E7",
       "4": "#FAB387",
@@ -79,7 +46,7 @@ $configContent = @'
       "6": "#A6E3A1",
       "7": "#94E2D5",
       "8": "#89DCEB",
-      "9": "#710193" 
+      "9": "#710193"
     },
     "padding": {
       "top": 1,
@@ -244,7 +211,7 @@ ${section}󰊢 Update${reset}
 
 ${section}󰊢 Git Shortcuts${reset}
 ${dim}────────────────────────────────────────────────────${reset}
-  ${command}g${reset}                  ${accent}→${reset} ${desc}Changes to the GitHub directory${reset}
+  ${command}g${reset}                  ${accent}→${reset} ${desc}Changes to the GitHub directory${reset}        
   ${command}ga${reset}                 ${accent}→${reset} ${desc}git add .${reset}
   ${command}gcl <repo>${reset}         ${accent}→${reset} ${desc}git clone${reset}
   ${command}gcom <message>${reset}     ${accent}→${reset} ${desc}add + commit${reset}
@@ -287,10 +254,10 @@ $wtSettingsContent = @'
 {
     "$help": "https://aka.ms/terminal-documentation",
     "$schema": "https://aka.ms/terminal-profiles-schema",
-    "actions": 
+    "actions":
     [
         {
-            "command": 
+            "command":
             {
                 "action": "copy",
                 "singleLine": false
@@ -302,7 +269,7 @@ $wtSettingsContent = @'
             "id": "User.paste"
         },
         {
-            "command": 
+            "command":
             {
                 "action": "splitPane",
                 "split": "auto",
@@ -319,7 +286,7 @@ $wtSettingsContent = @'
     "copyFormatting": "none",
     "copyOnSelect": false,
     "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
-    "keybindings": 
+    "keybindings":
     [
         {
             "id": "User.copy.644BA8F2",
@@ -338,20 +305,20 @@ $wtSettingsContent = @'
             "keys": "alt+shift+d"
         }
     ],
-    "newTabMenu": 
+    "newTabMenu":
     [
         {
             "type": "remainingProfiles"
         }
     ],
-    "profiles": 
+    "profiles":
     {
-        "defaults": 
+        "defaults":
         {
             "colorScheme": "Catppuccin Mocha",
             "cursorShape": "filledBox",
             "experimental.retroTerminalEffect": false,
-            "font": 
+            "font":
             {
                 "builtinGlyphs": true,
                 "cellHeight": "1.2",
@@ -365,7 +332,7 @@ $wtSettingsContent = @'
             "padding": "8",
             "useAcrylic": true
         },
-        "list": 
+        "list":
         [
             {
                 "commandline": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
@@ -393,7 +360,7 @@ $wtSettingsContent = @'
             }
         ]
     },
-    "schemes": 
+    "schemes":
     [
         {
             "background": "#1E1E2E",
@@ -477,4 +444,22 @@ if (Test-Path -Path $wtSettingsPath -IsValid) {
     Write-Host "Windows Terminal settings path not found. Please ensure Windows Terminal is installed." -ForegroundColor Red
 }
 
-Write-Host "`nComplete! Close Windows Terminal entirely and reopen it. Your new font, git tool, themes, layouts, and fastfetch profile should all be loaded!" -ForegroundColor Green
+
+# Add Git's Unix tools (usr\bin) to the PATH environment variable
+Write-Host "Adding Git Unix tools to Environment PATH..." -ForegroundColor Cyan
+$gitUsrBin = "C:\Program Files\Git\usr\bin"
+$currentPath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User)
+
+if (Test-Path $gitUsrBin) {
+    if ($currentPath -notlike "*$gitUsrBin*") {
+        $newPath = $currentPath + ";" + $gitUsrBin
+        [Environment]::SetEnvironmentVariable("Path", $newPath, [EnvironmentVariableTarget]::User)
+        Write-Host "Successfully added $gitUsrBin to User PATH." -ForegroundColor Green
+    } else {
+        Write-Host "Git Unix tools are already in your PATH." -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "Git usr\bin not found. Ensure Git is installed via winget first." -ForegroundColor Red
+}
+
+Write-Host "`nComplete! Close Windows Terminal entirely and reopen it. Your new font, git tool, Unix-like bin paths, themes, layouts, and fastfetch profile should all be loaded!" -ForegroundColor Green
