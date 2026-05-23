@@ -478,7 +478,7 @@ if (Test-Path -Path $wtSettingsPath -IsValid) {
 }
 
 
-# Add Git's Unix tools (usr\bin) to the PATH environment variable
+#9 Add Git's Unix tools (usr\bin) to the PATH environment variable
 Write-Host "Adding Git Unix tools to Environment PATH..." -ForegroundColor Cyan
 $gitUsrBin = "C:\Program Files\Git\usr\bin"
 $currentPath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User)
@@ -494,5 +494,65 @@ if (Test-Path $gitUsrBin) {
 } else {
     Write-Host "Git usr\bin not found. Ensure Git is installed via winget first." -ForegroundColor Red
 }
+#10 
+ # Define the target directory
 
-Write-Host "`nComplete! Close Windows Terminal entirely and reopen it. Your new font, git tool, Unix-like bin paths, themes, layouts, and fastfetch profile should all be loaded!" -ForegroundColor Green
+$targetDir = "$HOME\Documents\PowerShell"
+
+$tempRepoDir = "$env:TEMP\Windows-Ricing-Temp"
+
+$repoUrl = "https://github.com/Aniruddha69/Windows-Ricing.git"
+
+
+# Create the target directory if it doesn't exist
+
+if (-not (Test-Path -Path $targetDir)) {
+
+New-Item -ItemType Directory -Path $targetDir -Force
+
+}
+
+
+# Remove temp dir if it already exists from a previous failed run
+
+if (Test-Path -Path $tempRepoDir) {
+
+Remove-Item -Path $tempRepoDir -Recurse -Force
+
+}
+
+
+# Clone the repository (shallow clone for speed)
+
+git clone --depth 1 $repoUrl $tempRepoDir
+
+
+# Define the source path of the module folder within the repo
+
+# Based on your description, it is inside the 'powershell' folder
+
+$sourceFolder = Join-Path $tempRepoDir "PowerShell\Module"
+
+
+if (Test-Path -Path $sourceFolder) {
+
+# Move the module folder to Documents\PowerShell
+
+# Use -Force to overwrite if it already exists
+
+Copy-Item -Path $sourceFolder -Destination $targetDir -Recurse -Force
+
+Write-Host "Success: 'module' has been placed in $targetDir" -ForegroundColor Green
+
+} else {
+
+Write-Error "Could not find the 'module' folder at $sourceFolder. Please check the folder path inside the repository."
+
+}
+
+
+# Cleanup: Remove the temporary cloned repository
+
+Remove-Item -Path $tempRepoDir -Recurse -Force 
+
+Write-Host "`nComplete! Close Windows Terminal entirely and reopen it. Your new font, git tool, Unix-like bin paths, themes, layouts, autocomplete, and fastfetch profile should all be loaded!" -ForegroundColor Green
