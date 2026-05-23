@@ -69,7 +69,7 @@ $configContent = @'
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
   "logo": {
     "type": "file",
-    "source": "C:/Users/aniru/.config/fastfetch/ascii.txt",
+    "source": "C:/Users/%Username%/.config/fastfetch/ascii.txt",
     "color": {
       "1": "#FFFFFF",
       "2": "#F2CDCD",
@@ -275,7 +275,7 @@ Clear-host
 
 # Force Fastfetch to use YOUR config every time (bypass path confusion)
 if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
-    fastfetch -c "C:/Users/aniru/.config/fastfetch/config.jsonc"
+    fastfetch -c "C:/Users/%Username%/.config/fastfetch/config.jsonc"
 }
 '@
 $psProfilePath = Join-Path $psProfileDir "profile.ps1"
