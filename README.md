@@ -9,6 +9,13 @@
 </p>
 
 \---
+## Pic of my Terminal
+
+<img width="1243" height="671" alt="image" src="https://github.com/user-attachments/assets/86626471-ff88-42c7-a16d-93aaf9034e0a" />
+
+
+> [!NOTE]
+>  It changes resirtry key to register font files it in the Current User registry
 
 ## 🚀 Features
 
@@ -33,9 +40,7 @@ This setup script automates the transformation of your Windows Terminal into a p
 
 Before running the script, ensure you have:
 
-1. **Windows Terminal** installed.
-2. **Winget** (Windows Package Manager) enabled.
-3. **JetBrainsMono Nerd Font** installed (or update `settings.json` with your preferred font).
+1. **Winget** (Windows Package Manager) enabled.
 
 ## 🛠️ Usage
 
@@ -57,6 +62,14 @@ Before running the script, ensure you have:
 * **Fastfetch**: Config located at `\~/.config/fastfetch/config.jsonc`.
 * **PowerShell Profile**: Located at `\~/Documents/PowerShell/profile.ps1`.
 * **Terminal Settings**: Automatically updates `%LOCALAPPDATA%\\Packages\\Microsoft.WindowsTerminal\_8wekyb3d8bbwe\\LocalState\\settings.json`.
+
+## 🔄 What it changed
+
+* **Installs JetbrainMono Nerd Font by downloding and moving .ttf to appropriate location**
+* **Install/Updates Git, Powershell, Windows Terminal, and fastfetch**
+* **Adding fastfetch, PowerShell Profile, and Terminal Settings configs to designated directories**
+* **Adding everyday commands in PowerShell via Git usr/bin**
+* **Adding autocomplete in terminal**
 
 \---
 
