@@ -59,6 +59,7 @@ This setup script automates the transformation of your Windows Terminal into a p
 
 ## 🔄 What it changed
 
+* **Install/Updated Winget Package Manager**
 * **Installs JetbrainMono Nerd Font by downloding and moving .ttf to appropriate location**
 * **Install/Updates Git, Powershell, Windows Terminal, and fastfetch**
 * **Adding fastfetch, PowerShell Profile, and Terminal Settings configs to designated directories**
