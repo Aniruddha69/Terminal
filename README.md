@@ -36,12 +36,6 @@ This setup script automates the transformation of your Windows Terminal into a p
   * JetBrainsMono Nerd Font integration.
   * Custom cursor and padding.
 
-## 📋 Requirements
-
-Before running the script, ensure you have:
-
-1. **Winget** (Windows Package Manager) enabled.
-
 ## 🛠️ Usage
 
 1. Run the setup script:
