@@ -1,3 +1,54 @@
+# Enable-Winget.ps1
+# This script installs or updates the Windows Package Manager (winget)
+
+$ErrorActionPreference = "Stop"
+$progressPreference = 'silentlyContinue'
+
+Write-Host "Checking if winget is already installed..." -ForegroundColor Cyan
+
+if (Get-Command winget -ErrorAction SilentlyContinue) {
+    Write-Host "Winget is already installed!" -ForegroundColor Green
+    $version = winget --version
+    Write-Host "Version: $version"
+    exit
+}
+
+Write-Host "Winget not found. Fetching the latest release from GitHub..." -ForegroundColor Yellow
+
+# Enforce TLS 1.2 for the web request
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+# Get the latest release data from the winget-cli repository
+$releases_url = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+$response = Invoke-RestMethod -Uri $releases_url
+
+# Find the .msixbundle asset
+$asset = $response.assets | Where-Object { $_.name -match "\.msixbundle$" }
+
+if (-not $asset) {
+    Write-Error "Could not find the winget .msixbundle in the latest release."
+    exit
+}
+
+$download_url = $asset.browser_download_url
+$temp_file = "$env:TEMP\$($asset.name)"
+
+Write-Host "Downloading winget from $($download_url)..." -ForegroundColor Cyan
+Invoke-WebRequest -Uri $download_url -OutFile $temp_file
+
+Write-Host "Installing winget (App Installer)..." -ForegroundColor Cyan
+Add-AppxPackage -Path $temp_file
+
+# Verify installation
+if (Get-Command winget -ErrorAction SilentlyContinue) {
+    Write-Host "Successfully installed winget!" -ForegroundColor Green
+} else {
+    Write-Host "Installation completed, but you may need to restart your terminal or PC to use the 'winget' command." -ForegroundColor Yellow
+}
+
+# Clean up
+Remove-Item -Path $temp_file -Force
+
 # 1. Download and Install JetBrainsMono Nerd Font
 Write-Host "Downloading JetBrainsMono Nerd Font..." -ForegroundColor Cyan
 $fontUrl = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip"
