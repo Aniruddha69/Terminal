@@ -10,7 +10,6 @@ if (Get-Command winget -ErrorAction SilentlyContinue) {
     Write-Host "Winget is already installed!" -ForegroundColor Green
     $version = winget --version
     Write-Host "Version: $version"
-    exit
 }
 
 Write-Host "Winget not found. Fetching the latest release from GitHub..." -ForegroundColor Yellow
@@ -26,8 +25,7 @@ $response = Invoke-RestMethod -Uri $releases_url
 $asset = $response.assets | Where-Object { $_.name -match "\.msixbundle$" }
 
 if (-not $asset) {
-    Write-Error "Could not find the winget .msixbundle in the latest release."
-    exit
+    Write-Error "Could not find the winget.msixbundle in the latest release."
 }
 
 $download_url = $asset.browser_download_url
