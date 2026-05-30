@@ -118,7 +118,7 @@ $configContent = @'
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
   "logo": {
     "type": "file",
-    "source": "C:/Users/%Username%/.config/fastfetch/ascii.txt",
+    "source": "%USERNAME%/.config/fastfetch/ascii.txt",
     "color": {
       "1": "#FFFFFF",
       "2": "#F2CDCD",
@@ -219,9 +219,11 @@ Set-Content -Path $asciiPath -Value $asciiContent -Encoding UTF8
 Write-Host "Writing profile.ps1 to Documents\PowerShell..."
 $profileContent = @'
 
+# Aniruddha's Powershell profile 
+
 Write-Host "Use 'Show-Help' to list all available functions" -ForegroundColor Yellow
 
-#KeyBinds
+# KeyBinds
 Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
 Set-PSReadLineKeyHandler -Chord 'Ctrl+d' -Function DeleteChar
 Set-PSReadLineKeyHandler -Chord 'Ctrl+w' -Function BackwardDeleteWord
@@ -324,7 +326,7 @@ Clear-host
 
 # Force Fastfetch to use YOUR config every time (bypass path confusion)
 if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
-    fastfetch -c "C:/Users/%Username%/.config/fastfetch/config.jsonc"
+    fastfetch -c "$HOME/.config/fastfetch/config.jsonc"
 }
 '@
 $psProfilePath = Join-Path $psProfileDir "profile.ps1"
@@ -367,7 +369,7 @@ $wtSettingsContent = @'
     "alwaysOnTop": false,
     "copyFormatting": "none",
     "copyOnSelect": false,
-    "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+    "defaultProfile": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
     "keybindings":
     [
         {
