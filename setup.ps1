@@ -88,11 +88,11 @@ winget install --id fastfetch-cli.fastfetch --source winget --accept-package-agr
 winget install --id Mircosoft.WindowsTerminal --source winget --accept-package-agreements --accept-source-agreements
 
 # 3. Define directory paths
-$homeDir = $env:USERPROFILE
+$homeDir = $HOME
 $configDir = Join-Path $homeDir ".config"
 $fastfetchDir = Join-Path $configDir "fastfetch"
 $psProfileDir = Join-Path $homeDir "Documents\PowerShell"
-$wtSettingsPath = Join-Path $env:LOCALAPPDATA "Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+$wtSettingsPath = Join-Path $homedir "AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
 
 # 4. Create the directories and hide .config
 if (-not (Test-Path $configDir)) {
