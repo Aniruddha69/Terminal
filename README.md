@@ -11,8 +11,9 @@
 \---
 ## Pic of my Terminal
 
-<img width="1243" height="671" alt="image" src="https://github.com/user-attachments/assets/86626471-ff88-42c7-a16d-93aaf9034e0a" />
-
+<p align="center">
+  <img width="1243" height="671" alt="image" src="https://github.com/user-attachments/assets/86626471-ff88-42c7-a16d-93aaf9034e0a" />
+</p>
 
 > [!NOTE]
 >  It changes resirtry key to register font files it in the Current User registry
@@ -53,9 +54,9 @@ This setup script automates the transformation of your Windows Terminal into a p
 
 ## 🛠️ Customization
 
-* **Fastfetch**: Config located at `\~/.config/fastfetch/config.jsonc`.
-* **PowerShell Profile**: Located at `\~/Documents/PowerShell/profile.ps1`.
-* **Terminal Settings**: Automatically updates `%LOCALAPPDATA%\\Packages\\Microsoft.WindowsTerminal\_8wekyb3d8bbwe\\LocalState\\settings.json`.
+* **Fastfetch**: Config located at `~\.config\fastfetch\config.jsonc`.
+* **PowerShell Profile**: Located at `~\Documents\PowerShell\profile.ps1`.
+* **Terminal Settings**: Automatically updates `~\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json`.
 
 ## 🔄 What it changed
 
